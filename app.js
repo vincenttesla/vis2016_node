@@ -4,13 +4,15 @@ var mongoose = require('mongoose')
 var _ = require('underscore')
 var Page = require('./models/page')
 var bodyParser = require('body-parser')
-var port = 2222
+var port = process.env.PORT || 2222
 var app = express()
 
-mongoose.connect('mongodb://localhost/nodemongo')
+mongoose.connect('mongodb://127.0.0.1:2222/test')
 
 app.set('views','./views/pages')
-app.use(bodyParser.urlencoded())
+app.set('view engine', 'jade');
+app.use(bodyParser.urlencoded({extended:false}))
+app.use(bodyParser.json()); 
 app.use(express.static(path.join(__dirname, 'bower_components')))
 app.listen(port)
 
@@ -24,17 +26,16 @@ app.get('/', function(req, res) {
 })
 
 //post page
-app.post('/', function(res, req){
-	var pageObj = req.body.page
-	var _page
-
-		_page = new Page(pageObj.slice(0));
-
+app.post('/', function(req, res){
+	var pageObj = req.body.page;
+	var _page = new Page({
+		page : pageObj
+	});
 		_page.save(function(err, page){
 			if(err){
 					console.log(err)
 				}
-
+				console.log(page)
 				res.redirect('/page/' + page._id)
 		})
 })

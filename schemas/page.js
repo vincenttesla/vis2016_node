@@ -1,6 +1,8 @@
 var mongoose = require('mongoose')
 
-var PageSchema = new mongoose.Schema([])
+var PageSchema = new mongoose.Schema({
+	page: String
+})
 
 PageSchema.pre('save', function(next){
 	next()
