@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>succ</title>
-</head>
-<body>
-succ
-</body>
-</html>
+doctype
+html
+	head
+		meta(charset="utf-8")
+		title #{title}
+		link(href="/style/main_boot.css", rel="stylesheet")
+		script(src="/jquery/dist/jquery.min.js")
+		script(src="/echarts/dist/echarts.js")
+	body
+		.container
+		.row
+		.col-md-12.chart-area#chartArea(value="#{page}")
+		script(src="/js/view.js")

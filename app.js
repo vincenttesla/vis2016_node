@@ -12,7 +12,6 @@ mongoose.connect('mongodb://127.0.0.1:2222/test')
 app.set('views','./views/pages')
 app.set('view engine', 'jade');
 app.use(bodyParser.urlencoded({extended:false}))
-app.use(bodyParser.json()); 
 app.use(express.static(path.join(__dirname, 'bower_components')))
 app.listen(port)
 
@@ -22,6 +21,18 @@ console.log('imooc started on port ' + port)
 app.get('/', function(req, res) {
 	res.render('index', {
 		title: 'lrd index'
+	})
+})
+
+// detail page
+app.get('/page/:id', function(req, res) {
+	var id = req.params.id
+
+	Page.findById(id, function(err, page){
+		res.render('detail',{
+			title: "static charts",
+			page: page.page
+		})
 	})
 })
 
@@ -35,19 +46,7 @@ app.post('/', function(req, res){
 			if(err){
 					console.log(err)
 				}
-				console.log(page)
-				res.redirect('/page/' + page._id)
+				res.send(page._id)
+				// res.redirect('/page/' + page._id)
 		})
-})
-
-// detail page
-app.get('/page/:id', function(req, res) {
-	var id = req.params.id
-
-	Page.findById(id, function(err, page){
-		res.render('detail', {
-			title: 'pageview',
-			page: page
-		})
-	})
 })

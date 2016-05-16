@@ -254,7 +254,7 @@ initBtn.on("click",function(){
 	initAChart();
 })
 inputJson.on("focus",function(){
-	// inputAjax.val() = "";
+	inputAjax.val("");
 	checkAjax.hide();
 	nowDataInput = inputJson;
 	nowDataCheckMethod = isJson;
@@ -262,7 +262,7 @@ inputJson.on("focus",function(){
 	checkJson.show();
 })
 inputAjax.on("focus",function(){
-	// inputJson.val() = "";
+	inputJson.val("");
 	checkJson.hide();
 	nowDataInput = inputAjax;
 	nowDataCheckMethod = isAjax;
@@ -275,7 +275,10 @@ nextBtn.on("click",function(){
 			nowDataInput.parent().removeClass("has-error");
 			nowDataInput.parent().addClass("has-success");
 			saveData(nowDataInput);
+			checkAjax.hide();
+			checkJson.hide();
 			addDataModal.modal('hide');
+			nowDataInput.val("");
 			chooseXYModal.modal('show');
 		}else{
 			nowDataInput.parent().addClass("has-error");
@@ -292,13 +295,25 @@ initDoneBtn.on("click",function(){
 })
 chartArea.on("click","button[name^=repeatInitBtn]",function(){
 	initAChart();
-	page[nowId] = page[$(event.target).val()];
+	page[nowId] = jQuery.extend(true, {}, page[$(event.target).val()]);
 	ids.push(nowId);
 	setPage();
 })
 chartArea.on("click","button[name^=superSetBtn]",function(event){
 	nowId = $(event.target).val();
 	superSettingModal.modal('show');
+	titleName.val(""+page[nowId].option.title.text);
+	xName.val(""+page[nowId].option.xAxis.name);
+	yName.val(""+page[nowId].option.yAxis.name);
+	page[nowId].option.xAxis.name = $.trim(xName.val());
+	page[nowId].option.yAxis.name = $.trim(yName.val());
+	document.getElementById("inputDataZoom").checked = page[nowId].option.dataZoom.show;
+	document.getElementById("inputToolbox").checked = page[nowId].option.toolbox.show;
+	if(page[nowId].option.series[0].type == 'bar'){
+		document.getElementById("inputTypeBar").checked = true;
+	}else{
+		document.getElementById("inputTypeLine").checked = true;
+	}
 })
 chartArea.on("click","button[name^=deleteChartBtn]",function(){
 	if(confirm("是否删除？")){
@@ -319,12 +334,13 @@ superSetDoneBtn.on("click",function(){
 	superSettingModal.modal('hide');
 })
 initViewPageBtn.on("click",function(){
-	var pa = JSON.stringify(page);
-	var sss = {"page": pa};
+	var sss = JSON.stringify(page);
+	var pages = {page:sss};
 	if(ids.length > 0){
 		if(confirm("是否生成图标页？")){
-			$.post('http://localhost:2222/',sss,function(){
+			$.post('http://localhost:2222/',pages,function(data){
 				console.log("post success!");
+				location.href = "http://localhost:2222/page/"+data;
 			})
 		}
 	}else{
