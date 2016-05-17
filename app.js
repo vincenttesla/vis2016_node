@@ -50,3 +50,9 @@ app.post('/', function(req, res){
 				// res.redirect('/page/' + page._id)
 		})
 })
+
+//read excel
+app.post('/excel', function(req, res){
+	console.log(req);
+	var fileObj = req.body.form;
+})

@@ -92,6 +92,10 @@ var checkJson = $("#checkJson");
 var inputAjax = $("#inputAjax");
 //ajax校验框
 var checkAjax = $("#checkAjax");
+//excel输入框
+var inputExcel = $("#inputExcel");
+//excel校验框
+var checkExcel = $("#checkExcel");
 //当前访问的输入框
 var nowDataInput = inputJson;
 //当前应当进行的数据判定方法
@@ -140,6 +144,25 @@ function saveData(position){
 	}else if(isJson(position)){
 		page[nowId].data = $.parseJSON(position.val())[0]["data"];
 		renderXY();
+	}else if(isExcel(position)){
+		var fileObj = document.getElementById("inputExcel").files[0];
+		var form = new FormData();
+		form.append("file",fileObj);
+		var xhr = new XMLHttpRequest();
+
+            xhr.open("post", 'http://localhost:2222/excel', true);
+
+            xhr.onload = function () {
+
+                console.log("上传完成!");
+
+            };
+            xhr.send(form);
+		// $.post('http://localhost:2222/excel',form,function(data){
+		// 	console.log(data);
+		// 	page[nowId].data = $.parseJSON(data)[0]["data"];
+		// 	renderXY();
+		// })
 	}
 }
 //读取数据中横纵轴的可能取值并渲染
@@ -247,6 +270,13 @@ function isAjax(position){
 	var exp = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
 	return exp.test(ajaxUrl);
 }
+//判断数据格式是否为excel
+function isExcel(position){
+	var fileName = position.val();
+	var exp = /\.xlsx$/;
+	return exp.test(fileName);
+}
+
 
 /*事件绑定*/
 initBtn.on("click",function(){
@@ -255,7 +285,9 @@ initBtn.on("click",function(){
 })
 inputJson.on("focus",function(){
 	inputAjax.val("");
+	inputExcel.val("");
 	checkAjax.hide();
+	checkExcel.hide();
 	nowDataInput = inputJson;
 	nowDataCheckMethod = isJson;
 	checkJson.html("请输入json格式的数据，例如：[{\"data\":[{\"num\":16,\"day\":\"20150811\"},{\"num\":180,\"day\":\"20150810\"},{\"num\":44,\"day\":\"20150809\"}]}]");
@@ -263,11 +295,23 @@ inputJson.on("focus",function(){
 })
 inputAjax.on("focus",function(){
 	inputJson.val("");
+	inputExcel.val("");
 	checkJson.hide();
+	checkExcel.hide();
 	nowDataInput = inputAjax;
 	nowDataCheckMethod = isAjax;
 	checkAjax.html("请输入ajax请求，例如：http://probe.escience.cn/probe/api/stats/cstcloud/cstcloud?day=30");
 	checkAjax.show();
+})
+inputExcel.on("focus",function(){
+	inputJson.val("");
+	inputAjax.val("");
+	checkJson.hide();
+	checkAjax.hide();
+	nowDataInput = inputExcel;
+	nowDataCheckMethod = isExcel;
+	checkExcel.html("请输入excel文件。")
+	checkExcel.show();
 })
 nextBtn.on("click",function(){
 	if(!inputIsNull(nowDataInput)){
@@ -277,6 +321,7 @@ nextBtn.on("click",function(){
 			saveData(nowDataInput);
 			checkAjax.hide();
 			checkJson.hide();
+			checkExcel.hide();
 			addDataModal.modal('hide');
 			nowDataInput.val("");
 			chooseXYModal.modal('show');
