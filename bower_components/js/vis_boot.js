@@ -78,6 +78,8 @@ var nowId = "";
 var iid = 0;
 //页面中存在的图标的id数组
 var ids = [];
+//excel处理后的数据
+var excelData = [];
 
 /*dom*/
 //创建按钮
@@ -145,24 +147,19 @@ function saveData(position){
 		page[nowId].data = $.parseJSON(position.val())[0]["data"];
 		renderXY();
 	}else if(isExcel(position)){
+		console.log("######");
 		var fileObj = document.getElementById("inputExcel").files[0];
 		var form = new FormData();
 		form.append("file",fileObj);
 		var xhr = new XMLHttpRequest();
-
             xhr.open("post", 'http://localhost:2222/excel', true);
-
             xhr.onload = function () {
-
                 console.log("上传完成!");
-
+                excelData = xhr.response;
+                page[nowId].data = $.parseJSON(excelData);
+                renderXY();
             };
-            xhr.send(form);
-		// $.post('http://localhost:2222/excel',form,function(data){
-		// 	console.log(data);
-		// 	page[nowId].data = $.parseJSON(data)[0]["data"];
-		// 	renderXY();
-		// })
+        xhr.send(form);
 	}
 }
 //读取数据中横纵轴的可能取值并渲染
@@ -382,8 +379,8 @@ initViewPageBtn.on("click",function(){
 	var sss = JSON.stringify(page);
 	var pages = {page:sss};
 	if(ids.length > 0){
-		if(confirm("是否生成图标页？")){
-			$.post('http://localhost:2222/',pages,function(data){
+		if(confirm("是否生成图表页？")){
+			$.post('http://localhost:2222/aaa',pages,function(data){
 				console.log("post success!");
 				location.href = "http://localhost:2222/page/"+data;
 			})
